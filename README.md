@@ -1,6 +1,9 @@
 # plesio-server
 
 ## 環境構築
+### Env file
+
+```.env.sample```を参考にして```.env```を作成してください
 
 ### Docker
 
