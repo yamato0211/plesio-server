@@ -1,70 +1,21 @@
-name: Go Lint
+name: Golangci-lint ReviewDog 
 
 on:
   pull_request:
-    paths:
-      - "**.go"
-    push:
-      branches:
-        - main
-        - develop
-      pull_requests:
-        - main
-        - develop
-      paths:
-        - "**.go"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  GO_VERSION: 1.21.3
-  LINT_VERSION: v1.54.2
 
 jobs:
   golangci-lint:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write 
+    runs-on: ubuntu-latest
     steps:
-      - name: ソースコードのチェックアウト
-        uses: actions/checkout@v3
-      - name: Go SDKのキャッシュ
-        uses: whywaita/actions-cache-s3@v3-s3
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-golangci-lint@v2
         with:
-          path: /opt/hostedtoolcache/go/${{ env.GO_VERSION }}
-          key: go-sdk-cache/${{ runner.os }}/${{ env.GO_VERSION }}
-      - name: Go ${{ env.GO_VERSION }}のセットアップ
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: false
-      - name: golangci-lint成果物のキャッシュ
-        uses: whywaita/actions-cache-s3@v3-s3
-        with:
-          path: |
-            ~/.cache/golangci-lint
-            ~/.cache/go-build
-            ~/go/pkg
-          key: lint-cache/${{ runner.os }}/${{ github.ref }}/${{ github.sha }}”
-          restore-keys: |
-            lint-cache/${{ runner.os }}/${{ github.ref }}/
-            lint-cache/${{ runner.os }}/refs/heads/${{ github.base_ref }}/
-            lint-cache/${{ runner.os }}/refs/heads/main
-      - name: golangci-lintバイナリのキャッシュ
-        id: binary_cache
-        uses: whywaita/actions-cache-s3@v3-s3
-        with:
-          path: ~/go/bin
-          key: lint-binary/${{ runner.os }}/${{ env.LINT_VERSION }}
-      - name: golangci-lintのインストール
-        if: steps.binary_cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.LINT_VERSION }}
-      - name: golangci-lintの実行
-        shell: bash
-        run: |
-          ~/go/bin/golangci-lint run --verbose ./...”
-
-
+          github_token: ${{ secrets.github_token }}
+          go_version: ^1.20
+          reporter: github-pr-review
+          level: warning
+          golangci_lint_flags: "--config=.golangci.yml"

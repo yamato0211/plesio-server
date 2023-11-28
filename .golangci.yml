@@ -1,0 +1,19 @@
+listers-settings:
+  govet:
+    check-shadowing: false
+  misspell:
+    locale: US
+
+linters:
+  disable-all: true
+  enable:
+    - goimports
+    - errcheck
+    - gocognit
+    - gocyclo
+    - gofmt
+    - govet
+    - misspell
+    - staticcheck
+    - whitespace
+    
