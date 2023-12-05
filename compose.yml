@@ -3,7 +3,7 @@ services:
   api:
     build: 
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: docker/dev/Dockerfile
     volumes:
       - ./:/go/src/plesio-server
     ports:
