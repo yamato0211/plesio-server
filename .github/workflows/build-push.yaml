@@ -57,11 +57,9 @@ jobs:
       continue-on-error: true
       run: |
         yq -i '.backend.imageTag = "'${{ github.sha }}'"' ./values.yaml
-        git diff --name-only --exit-code || true
 
     - name: Commit and push
       working-directory: manifest
-      if: steps.update-image-tag.outcome == 'failure'
       run: |
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
