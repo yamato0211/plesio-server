@@ -41,7 +41,7 @@ jobs:
 
     - name: Push
       run: |
-        docker push asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:latest
+        docker push asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:${{ github.sha }}
 
     - name: Checkout config repository
       uses: actions/checkout@v3
