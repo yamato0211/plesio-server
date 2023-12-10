@@ -34,7 +34,6 @@ func (c *Client) ReadLoop(broadCast chan<- []byte, unregister chan<- *Client) {
 
 		broadCast <- jsonMsg
 	}
-
 }
 
 func (c *Client) WriteLoop() {
