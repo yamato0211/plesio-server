@@ -1,0 +1,35 @@
+name: Build and Push Image
+
+on:
+  push:
+    branches: 
+     - main
+
+jobs:
+  build-and-publish:
+    name: Build and Push docker image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Setup Google Cloud
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ secrets.GCLOUD_AUTH }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Configure docker for artifact registry
+      run: |
+        gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+
+    - name: Build
+      run: |
+        docker build -t asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:latest -f docker/prod/Dockerfile ./
+
+    - name: Push
+      run: |
+        docker push asia-northeast1-docker.pkg.dev/my-project/sample-repository/plesio-server:latest

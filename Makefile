@@ -1,3 +1,6 @@
+
+.PHONY: lint lint-fix run logs
+
 lint:
 	golangci-lint run ./...
 
