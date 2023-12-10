@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-publish:
+  build:
     name: Build and Push docker image
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
     - name: Checkout
@@ -39,3 +42,29 @@ jobs:
     - name: Push
       run: |
         docker push asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:latest
+
+    - name: Checkout config repository
+      uses: actions/checkout@v3
+      with:
+        repository: yamato0211/plesio-infra
+        ref: main
+        token: ${{ secrets.PAT }}
+        path: manifest
+
+    - name: Update image tag
+      id: update-image-tag
+      working-directory: manifest
+      continue-on-error: true
+      run: |
+        yq -i '.front.imageTag = "'`printenv IMAGE_TAG`'"' ./main/values.yaml
+        git diff --name-only --exit-code
+
+    - name: Commit and push
+      working-directory: manifest
+      if: steps.update-image-tag.outcome == 'failure'
+      run: |
+        git config user.name github-actions[bot]
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        git add .
+        git commit --author=. -m "Update image tag to "`printenv IMAGE_TAG`
+        git push
