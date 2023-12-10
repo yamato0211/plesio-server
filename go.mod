@@ -3,8 +3,11 @@ module github.com/yamato0211/plesio-server
 go 1.21.4
 
 require (
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/google/wire v0.5.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/labstack/echo/v4 v4.11.3 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
