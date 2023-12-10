@@ -57,7 +57,7 @@ jobs:
       continue-on-error: true
       run: |
         yq -i '.backend.imageTag = "'${{ github.sha }}'"' ./values.yaml
-        git diff --name-only --exit-code
+        git diff --name-only --exit-code || true
 
     - name: Commit and push
       working-directory: manifest
