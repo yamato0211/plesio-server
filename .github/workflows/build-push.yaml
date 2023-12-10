@@ -37,7 +37,7 @@ jobs:
 
     - name: Build
       run: |
-        docker build -t asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:latest -f docker/prod/Dockerfile ./
+        docker build -t asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:${{ github.sha }} -f docker/prod/Dockerfile ./
 
     - name: Push
       run: |
@@ -56,7 +56,7 @@ jobs:
       working-directory: manifest
       continue-on-error: true
       run: |
-        yq -i '.front.imageTag = "'`printenv IMAGE_TAG`'"' ./main/values.yaml
+        yq -i '.backend.imageTag = "'${{ github.sha }}'"' ./values.yaml
         git diff --name-only --exit-code
 
     - name: Commit and push
@@ -66,5 +66,5 @@ jobs:
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
         git add .
-        git commit --author=. -m "Update image tag to "`printenv IMAGE_TAG`
+        git commit --author=. -m "Update image tag to ${{ github.sha }}"
         git push
