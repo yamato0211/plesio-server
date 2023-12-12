@@ -8,11 +8,32 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yamato0211/plesio-server/pkg/adapter"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/yamato0211/plesio-server/pkg/injection"
 )
 
 func main() {
-	e := adapter.InitRouter()
+	e := echo.New()
+	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
+
+	// DI
+	mh := injection.InitializeMasterHandler()
+
+	// Routing
+	api := e.Group("/api/v1")
+	{
+		ws := api.Group("/ws")
+		{
+			ws.GET("/", mh.Ws.Handle())
+		}
+		user := api.Group("/users")
+		{
+			user.GET("/:id", mh.User.GetUser())
+		}
+	}
 
 	go func() {
 		if err := e.Start(":8000"); err != nil && err != http.ErrServerClosed {

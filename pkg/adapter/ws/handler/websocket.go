@@ -24,15 +24,17 @@ func NewWebSocketHandler(hub *ws.Hub) *WebSocketHandler {
 	}
 }
 
-func (h *WebSocketHandler) Handle(c echo.Context) error {
-	conn, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
-	if err != nil {
-		c.Logger().Errorf("failed to upgrade: %v", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to upgrade")
+func (h *WebSocketHandler) Handle() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		conn, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
+		if err != nil {
+			c.Logger().Errorf("failed to upgrade: %v", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to upgrade")
+		}
+		client := ws.NewClient(conn)
+		go client.ReadLoop(h.hub.BroadcastCh, h.hub.UnRegisterCh)
+		go client.WriteLoop()
+		h.hub.RegisterCh <- client
+		return nil
 	}
-	client := ws.NewClient(conn)
-	go client.ReadLoop(h.hub.BroadcastCh, h.hub.UnRegisterCh)
-	go client.WriteLoop()
-	h.hub.RegisterCh <- client
-	return nil
 }

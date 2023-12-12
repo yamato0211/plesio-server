@@ -8,17 +8,17 @@ import (
 	"github.com/yamato0211/plesio-server/pkg/usecase"
 )
 
-type userHandler struct {
+type UserHandler struct {
 	usecase usecase.IUserUsecase
 }
 
-func NewUserHandler(uu usecase.IUserUsecase) *userHandler {
-	return &userHandler{
+func NewUserHandler(uu usecase.IUserUsecase) *UserHandler {
+	return &UserHandler{
 		usecase: uu,
 	}
 }
 
-func (uh *userHandler) GetUser() echo.HandlerFunc {
+func (uh *UserHandler) GetUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
 		user, err := uh.usecase.GetUser(c, id)
