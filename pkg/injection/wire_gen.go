@@ -7,17 +7,25 @@
 package injection
 
 import (
+	"github.com/yamato0211/plesio-server/pkg/adapter"
+	handler2 "github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
+	"github.com/yamato0211/plesio-server/pkg/adapter/ws/handler"
 	"github.com/yamato0211/plesio-server/pkg/infra/mysql"
 	"github.com/yamato0211/plesio-server/pkg/usecase"
 	"github.com/yamato0211/plesio-server/pkg/utils/config"
+	"github.com/yamato0211/plesio-server/pkg/web/ws"
 )
 
 // Injectors from wire.go:
 
-func InitializeUserUsecase() usecase.IUserUsecase {
+func InitializeMasterHandler() *adapter.MasterHandler {
+	hub := ws.NewHub()
+	webSocketHandler := handler.NewWebSocketHandler(hub)
 	dbConfig := config.NewDBConfig()
 	db := mysql.NewMySQLConnector(dbConfig)
 	userRepository := mysql.NewUserRepository(db)
 	iUserUsecase := usecase.NewUserUsecase(userRepository)
-	return iUserUsecase
+	userHandler := handler2.NewUserHandler(iUserUsecase)
+	masterHandler := adapter.NewMasterHandler(webSocketHandler, userHandler)
+	return masterHandler
 }
