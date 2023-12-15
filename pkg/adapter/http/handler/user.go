@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/yamato0211/plesio-server/pkg/adapter/schemas"
 	"github.com/yamato0211/plesio-server/pkg/usecase"
 )
 
@@ -21,15 +20,11 @@ func NewUserHandler(uu usecase.IUserUsecase) *UserHandler {
 func (uh *UserHandler) GetUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
-		user, err := uh.usecase.GetUser(c, id)
+		_, err := uh.usecase.GetUser(c, id)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
-		return c.JSON(http.StatusOK, schemas.User{
-			ID:    user.ID,
-			Name:  user.Name,
-			Email: user.Email,
-		})
+		return c.JSON(http.StatusOK, "db conn ok!!")
 	}
 }

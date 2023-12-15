@@ -19,10 +19,10 @@ func NewUserRepository(db *sqlx.DB) repository.UserRepository {
 
 // userの単一取得
 func (ur *userRepository) Select(ctx echo.Context, id string) (*entity.User, error) {
-	var user *entity.User
-	err := ur.db.Get(user, "SELECT * FROM users WHERE id = ?", id)
+	// var user *entity.User
+	err := ur.db.Ping()
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return nil, nil
 }
