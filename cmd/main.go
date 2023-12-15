@@ -22,13 +22,13 @@ func main() {
 	// DI
 	mh := injection.InitializeMasterHandler()
 
+	// Health Check
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+
 	// Routing
 	api := e.Group("/api/v1")
-	{
-		api.GET("/", func(c echo.Context) error {
-			return c.JSON(http.StatusOK, "Hello, World!")
-		})
-	}
 	{
 		ws := api.Group("/ws")
 		{
