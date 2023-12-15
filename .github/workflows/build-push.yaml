@@ -46,7 +46,7 @@ jobs:
     - name: Checkout plesio-infra repository
       uses: actions/checkout@v2
       with:
-        repository: 'plesio-infra'
+        repository: 'yamato0211/plesio-infra'
         ref: 'main'
         token: ${{ secrets.PAT }}
         path: 'plesio-infra'
