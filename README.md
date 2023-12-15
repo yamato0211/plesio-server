@@ -94,3 +94,51 @@ make lint-fix # lintをかける、直せるものは直してくれる
 └── tmp //バイナリ
     └── main
 ```
+
+k8s -> cron job 
+午前0時 // users is_logined -> false
+github api -> コントリビュートの数取得(commit, pull_request, issue)
+
+```
+table users
+- id
+- name
+- email
+- is_logined -> true
+- coin
+- created_at
+- updated_at
+```
+|
+|
+|----> table users_items
+|                - id
+```              - user_id
+table item       - item_id
+- id             - count
+- name
+- type
+- atk
+- reality(1~5)
+- created_at
+- updated_at
+```
+
+```
+game result
+- id
+- player1
+- player2
+- winner
+- score
+- exp
+- created_at
+- updated_at
+```
+
+
+coin -> ガチャ -> 武器(アイテムトレード)
+     -> アイテム -> 薬草
+    lv, hp, 武器atk
+game result
+ranking
