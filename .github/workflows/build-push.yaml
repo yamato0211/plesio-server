@@ -43,26 +43,23 @@ jobs:
       run: |
         docker push asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:${{ github.sha }}
 
-    - name: Checkout config repository
-      uses: actions/checkout@v3
+    - name: Checkout plesio-infra repository
+      uses: actions/checkout@v2
       with:
-        repository: yamato0211/plesio-infra
-        ref: main
+        repository: 'plesio-infra'
+        ref: 'main'
         token: ${{ secrets.PAT }}
-        path: manifest
+        path: 'plesio-infra'
 
-    - name: Update image tag
-      id: update-image-tag
-      working-directory: manifest
-      continue-on-error: true
+    - name: Update image tag in deployment.yaml
       run: |
-        yq -i '.backend.imageTag = "'${{ github.sha }}'"' ./values.yaml
+        yq e -i '.spec.template.spec.containers[0].image = "asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server@sha256:${{ github.sha }}"' plesio-infra/manifests/deployment.yaml
 
-    - name: Commit and push
-      working-directory: manifest
+    - name: Commit and push changes
       run: |
-        git config user.name github-actions[bot]
-        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-        git add .
-        git commit --author=. -m "Update image tag to ${{ github.sha }}"
+        cd plesio-infra
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add manifests/deployment.yaml
+        git commit -m "Update image tag to ${{ github.sha }}"
         git push
