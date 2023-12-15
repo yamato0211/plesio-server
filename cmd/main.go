@@ -25,6 +25,11 @@ func main() {
 	// Routing
 	api := e.Group("/api/v1")
 	{
+		api.GET("/", func(c echo.Context) error {
+			return c.JSON(http.StatusOK, "Hello, World!")
+		})
+	}
+	{
 		ws := api.Group("/ws")
 		{
 			ws.GET("/", mh.Ws.Handle())
