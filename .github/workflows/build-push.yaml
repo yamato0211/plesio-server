@@ -53,7 +53,7 @@ jobs:
 
     - name: Update image tag in deployment.yaml
       run: |
-        yq e -i '.spec.template.spec.containers[0].image = "asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server@sha256:${{ github.sha }}"' plesio-infra/manifests/deployment.yaml
+        yq e -i '.spec.template.spec.containers[0].image = "asia-northeast1-docker.pkg.dev/plesio-infra-407706/plesio-infra-407706-repository/plesio-server:${{ github.sha }}"' plesio-infra/manifests/deployment.yaml
 
     - name: Commit and push changes
       run: |
