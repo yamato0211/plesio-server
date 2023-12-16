@@ -1,9 +1,13 @@
 package repository
 
-import "github.com/labstack/echo/v4"
+import (
+	"context"
+
+	"github.com/redis/go-redis/v9"
+)
 
 type RedisRepository interface {
-	// Publish(ctx context.Context, msg []byte) error
-	// Subscribe(ctx context.Context) error
-	Ping(ctx echo.Context) error
+	Publish(ctx context.Context, channel string, payload interface{}) error
+	Subscribe(ctx context.Context, channel string) <-chan *redis.Message
+	Ping(ctx context.Context) error
 }

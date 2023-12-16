@@ -1,18 +1,28 @@
 package ws
 
+import (
+	"context"
+
+	"github.com/yamato0211/plesio-server/pkg/domain/repository"
+)
+
+const broadCastChannel = "broadcast"
+
 type Hub struct {
 	Clients      map[*Client]bool
 	RegisterCh   chan *Client
 	UnRegisterCh chan *Client
 	BroadcastCh  chan []byte
+	pubsub       repository.RedisRepository
 }
 
-func NewHub() *Hub {
+func NewHub(pubsub repository.RedisRepository) *Hub {
 	return &Hub{
 		Clients:      make(map[*Client]bool),
 		RegisterCh:   make(chan *Client),
 		UnRegisterCh: make(chan *Client),
 		BroadcastCh:  make(chan []byte),
+		pubsub:       pubsub,
 	}
 }
 
@@ -26,9 +36,21 @@ func (h *Hub) RunLoop() {
 			h.unregister(client)
 
 		case msg := <-h.BroadcastCh:
-			h.broadCastToAllClient(msg)
+			h.publishMessage(msg)
 		}
 	}
+}
+
+func (h *Hub) SubscribeMessage() {
+	ch := h.pubsub.Subscribe(context.Background(), broadCastChannel)
+
+	for msg := range ch {
+		h.broadCastToAllClient([]byte(msg.Payload))
+	}
+}
+
+func (h *Hub) publishMessage(msg []byte) {
+	h.pubsub.Publish(context.Background(), broadCastChannel, msg)
 }
 
 func (h *Hub) register(c *Client) {
