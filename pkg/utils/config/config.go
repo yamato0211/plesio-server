@@ -16,12 +16,33 @@ type RedisConfig struct {
 	RedisEndpoint string
 }
 
+type GithubConfig struct {
+	ClientID     string
+	ClientSecret string
+}
+
+func NewGithubConfig() *GithubConfig {
+	cfg := &GithubConfig{
+		ClientID:     LookUpEnv("GITHUB_CLIENT_ID", ""),
+		ClientSecret: LookUpEnv("GITHUB_CLIENT_SECRET", ""),
+	}
+	return cfg
+}
+
 func NewDBConfig() *DBConfig {
+	// cfg := &DBConfig{
+	// 	DBHost: LookUpEnv("MYSQL_HOST", "127.0.0.1"),
+	// 	DBName: LookUpEnv("MYSQL_DATABASE", "main"),
+	// 	DBUser: LookUpEnv("MYSQL_USER", "admin"),
+	// 	DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
+	// 	DBPort: LookUpEnv("MYSQL_PORT", "3306"),
+	// }
+
 	cfg := &DBConfig{
-		DBHost: LookUpEnv("MYSQL_HOST", "db"),
+		DBHost: LookUpEnv("MYSQL_HOST", "host.docker.internal"),
 		DBName: LookUpEnv("MYSQL_DATABASE", "main"),
-		DBUser: LookUpEnv("MYSQL_USER", "user"),
-		DBPass: LookUpEnv("MYSQL_PASSWORD", "password"),
+		DBUser: LookUpEnv("MYSQL_USER", "admin"),
+		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	}
 	return cfg

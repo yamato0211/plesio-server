@@ -6,10 +6,12 @@ import (
 
 type MasterHandler struct {
 	User *http.UserHandler
+	Item *http.ItemHandler
 }
 
-func NewMasterHandler(user *http.UserHandler) *MasterHandler {
+func NewMasterHandler(user *http.UserHandler, item *http.ItemHandler) *MasterHandler {
 	return &MasterHandler{
 		User: user,
+		Item: item,
 	}
 }

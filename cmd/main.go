@@ -18,7 +18,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Use(middleware.Recover())
-	// e.Use(middleware.Logger())
+	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
 	// DI
@@ -44,7 +44,15 @@ func main() {
 		}
 		user := api.Group("/users")
 		{
-			user.GET("/:id", mh.User.GetUser())
+			user.POST("/", mh.User.CreateUser())
+			user.GET("/get/:id", mh.User.GetUser())
+			user.GET("/loginbonus", mh.User.LoginBonus())
+
+		}
+		item := api.Group("/items")
+		{
+			item.GET("/", mh.Item.GetAllItem())
+			item.POST("/buy", mh.Item.BuyItem())
 		}
 	}
 

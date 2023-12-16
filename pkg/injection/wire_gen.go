@@ -24,7 +24,12 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 	userRepository := mysql.NewUserRepository(db)
 	iUserUsecase := usecase.NewUserUsecase(userRepository)
 	userHandler := handler.NewUserHandler(iUserUsecase)
-	masterHandler := adapter.NewMasterHandler(userHandler)
+	itemRepository := mysql.NewItemRepository(db)
+	iItemUsecase := usecase.NewItemUsecase(itemRepository)
+	usersItemsRepository := mysql.NewUsersItemsRepository(db)
+	iUsersItemsUseCase := usecase.NewUsersItemsUseCase(usersItemsRepository)
+	itemHandler := handler.NewItemHandler(iItemUsecase, iUsersItemsUseCase)
+	masterHandler := adapter.NewMasterHandler(userHandler, itemHandler)
 	return masterHandler
 }
 
