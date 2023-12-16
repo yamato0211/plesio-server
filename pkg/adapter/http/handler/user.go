@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/yamato0211/plesio-server/pkg/adapter/schemas"
 	"github.com/yamato0211/plesio-server/pkg/usecase"
 )
 
@@ -20,11 +21,42 @@ func NewUserHandler(uu usecase.IUserUsecase) *UserHandler {
 func (uh *UserHandler) GetUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
-		_, err := uh.usecase.GetUser(c, id)
+		user, err := uh.usecase.GetUser(c, id)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
-		return c.JSON(http.StatusOK, "db conn ok!!")
+		return c.JSON(http.StatusOK, user)
+	}
+}
+func (uh *UserHandler) CreateUser() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req schemas.CreateUserRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		err = uh.usecase.CreateUser(c, req.Name, req.Email, req.GitID)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, "create user ok!!")
+	}
+}
+
+func (uh *UserHandler) LoginBonus() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var req schemas.LoginBonusRequest
+		err := c.Bind(&req)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		user, err := uh.usecase.LoginBonus(c, req.ID)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, user)
 	}
 }

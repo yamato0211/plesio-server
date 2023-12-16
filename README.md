@@ -113,19 +113,36 @@ table users
 |
 |----> table users_items
 |                - id
-```              - user_id
-table item       - item_id
-- id             - count
+|                - user_id
+|                - count
+|                - item_id
+|----> table users_weapons
+|                - id
+|                - user_id
+|                - count
+|                - weapon_id
+
+```                
+table item       
+- id  
+- name
+- type
+- heal
+- reality(1~5)
+- created_at
+- updated_at    
+
+```
+table weapon       
+- id  
 - name
 - type
 - atk
 - reality(1~5)
 - created_at
-- updated_at
+- updated_at   
 ```
-
-```
-game result
+table result
 - id
 - player1
 - player2
