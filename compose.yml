@@ -1,7 +1,7 @@
 version: '3.9'
 services:
-  api:
-    container_name: plesio-api
+  server1:
+    container_name: plesio-api-1
     build: 
       context: .
       dockerfile: docker/dev/Dockerfile
@@ -13,6 +13,21 @@ services:
       - .env
     depends_on:
       - db
+      - redis
+  server2:
+    container_name: plesio-api-2
+    build: 
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    volumes:
+      - ./:/go/src/plesio-server
+    ports:
+      - "8081:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
   db:
     container_name: plesio-db
     platform: linux/x86_64
@@ -30,7 +45,7 @@ services:
     image: adminer:4.7.5
     restart: always
     ports:
-      - "8081:8080"
+      - "8082:8080"
   redis:
     image: redis:latest
     ports:
@@ -39,33 +54,33 @@ services:
       - type: volume
         source: redis-volume
         target: /data
-  k6:
-    image: loadimpact/k6:latest
-    container_name: plesio-k6
-    environment:
-      - K6_STATSD_ENABLE_TAGS=true
-      - K6_STATSD_ADDR=dd-agent:8125
-    volumes:
-      - ./k6:/k6
-    depends_on:
-      - dd-agent
-      - api
+  # k6:
+  #   image: loadimpact/k6:latest
+  #   container_name: plesio-k6
+  #   environment:
+  #     - K6_STATSD_ENABLE_TAGS=true
+  #     - K6_STATSD_ADDR=dd-agent:8125
+  #   volumes:
+  #     - ./k6:/k6
+  #   depends_on:
+  #     - dd-agent
+  #     - api
 
-  dd-agent:
-    image: datadog/agent:latest
-    container_name: plesio-dd-agent
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-    environment:
-      - DD_API_KEY=${DD_API_KEY}
-      - DD_SITE=${DD_SITE}
-      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=1
-    env_file:
-      - .env
-    ports:
-      - "8125:8125/udp"
+  # dd-agent:
+  #   image: datadog/agent:latest
+  #   container_name: plesio-dd-agent
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /proc/:/host/proc/:ro
+  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+  #   environment:
+  #     - DD_API_KEY=${DD_API_KEY}
+  #     - DD_SITE=${DD_SITE}
+  #     - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=1
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "8125:8125/udp"
 volumes:
   dbdata:
   redis-volume:
