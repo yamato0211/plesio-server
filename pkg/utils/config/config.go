@@ -39,10 +39,10 @@ func NewDBConfig() *DBConfig {
 	// }
 
 	cfg := &DBConfig{
-		DBHost: LookUpEnv("MYSQL_HOST", "host.docker.internal"),
-		DBName: LookUpEnv("MYSQL_DATABASE", "main"),
-		DBUser: LookUpEnv("MYSQL_USER", "admin"),
-		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
+		DBHost: LookUpEnv("MYSQL_HOST", "db"),
+		DBName: LookUpEnv("MYSQL_DATABASE", "db"),
+		DBUser: LookUpEnv("MYSQL_USER", "user"),
+		DBPass: LookUpEnv("MYSQL_PASSWORD", "password"),
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	}
 	return cfg
