@@ -20,15 +20,15 @@ import (
 // Injectors from wire.go:
 
 func InitializeMasterHandler() *adapter.MasterHandler {
-	hub := ws.NewHub()
+	redisConfig := config.NewRedisConfig()
+	redisRepository := redis.NewRedisRepository(redisConfig)
+	hub := ws.NewHub(redisRepository)
 	webSocketHandler := handler.NewWebSocketHandler(hub)
 	dbConfig := config.NewDBConfig()
 	db := mysql.NewMySQLConnector(dbConfig)
 	userRepository := mysql.NewUserRepository(db)
 	iUserUsecase := usecase.NewUserUsecase(userRepository)
 	userHandler := handler2.NewUserHandler(iUserUsecase)
-	redisConfig := config.NewRedisConfig()
-	redisRepository := redis.NewRedisConnector(redisConfig)
 	iRedisUsecase := usecase.NewRedisUsecase(redisRepository)
 	redisHandler := handler2.NewRedisHandler(iRedisUsecase)
 	masterHandler := adapter.NewMasterHandler(webSocketHandler, userHandler, redisHandler)

@@ -21,7 +21,7 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 		config.NewRedisConfig,
 		mysql.NewMySQLConnector,
 		mysql.NewUserRepository,
-		redis.NewRedisConnector,
+		redis.NewRedisRepository,
 		usecase.NewUserUsecase,
 		usecase.NewRedisUsecase,
 		http_handler.NewUserHandler,
