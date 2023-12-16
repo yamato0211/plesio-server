@@ -23,8 +23,8 @@ func NewRedisRepository(cfg *config.RedisConfig) repository.RedisRepository {
 	}
 }
 
-func (rr *redisRepository) Publish(ctx context.Context, channel string, payload interface{}) error {
-	return rr.rdb.Publish(ctx, channel, payload).Err()
+func (rr *redisRepository) Publish(ctx context.Context, channel string, payload interface{}) {
+	rr.rdb.Publish(ctx, channel, payload)
 }
 
 func (rr *redisRepository) Subscribe(ctx context.Context, channel string) <-chan *redis.Message {

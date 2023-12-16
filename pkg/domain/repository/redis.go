@@ -7,7 +7,7 @@ import (
 )
 
 type RedisRepository interface {
-	Publish(ctx context.Context, channel string, payload interface{}) error
+	Publish(ctx context.Context, channel string, payload interface{})
 	Subscribe(ctx context.Context, channel string) <-chan *redis.Message
 	Ping(ctx context.Context) error
 }

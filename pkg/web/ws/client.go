@@ -48,8 +48,10 @@ func (c *Client) WriteLoop() {
 		if err != nil {
 			return
 		}
-		if _, err := w.Write(message); err != nil {
-			return
+		w.Write(message)
+
+		for i := 0; i < len(c.sendCh); i++ {
+			w.Write(<-c.sendCh)
 		}
 
 		if err := w.Close(); err != nil {

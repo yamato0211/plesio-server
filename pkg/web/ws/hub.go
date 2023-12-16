@@ -41,8 +41,8 @@ func (h *Hub) RunLoop() {
 	}
 }
 
-func (h *Hub) SubscribeMessage() {
-	ch := h.pubsub.Subscribe(context.Background(), broadCastChannel)
+func (h *Hub) SubscribeMessages() {
+	ch := h.pubsub.Subscribe(context.TODO(), broadCastChannel)
 
 	for msg := range ch {
 		h.broadCastToAllClient([]byte(msg.Payload))
@@ -50,7 +50,7 @@ func (h *Hub) SubscribeMessage() {
 }
 
 func (h *Hub) publishMessage(msg []byte) {
-	h.pubsub.Publish(context.Background(), broadCastChannel, msg)
+	h.pubsub.Publish(context.TODO(), broadCastChannel, msg)
 }
 
 func (h *Hub) register(c *Client) {
