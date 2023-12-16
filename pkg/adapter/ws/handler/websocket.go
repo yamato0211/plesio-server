@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
@@ -19,6 +20,7 @@ func NewWebSocketHandler(hub *ws.Hub) *WebSocketHandler {
 			CheckOrigin: func(r *http.Request) bool {
 				return true
 			},
+			HandshakeTimeout: time.Duration(60 * time.Second),
 		},
 		hub: hub,
 	}
