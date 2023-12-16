@@ -1,7 +1,7 @@
 version: '3.9'
 services:
-  server1:
-    container_name: plesio-api-1
+  api:
+    container_name: plesio-api
     build: 
       context: .
       dockerfile: docker/dev/Dockerfile
@@ -12,21 +12,6 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-      - redis
-  server2:
-    container_name: plesio-api-2
-    build: 
-      context: .
-      dockerfile: docker/dev/Dockerfile
-    volumes:
-      - ./:/go/src/plesio-server
-    ports:
-      - "8081:8080"
-    env_file:
-      - .env
-    depends_on:
-      - db
       - redis
   db:
     container_name: plesio-db
@@ -45,7 +30,7 @@ services:
     image: adminer:4.7.5
     restart: always
     ports:
-      - "8082:8080"
+      - "8081:8080"
   redis:
     image: redis:latest
     ports:

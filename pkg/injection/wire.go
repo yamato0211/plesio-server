@@ -19,8 +19,13 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 		config.NewDBConfig,
 		mysql.NewMySQLConnector,
 		mysql.NewUserRepository,
+		mysql.NewItemRepository,
+		mysql.NewUsersItemsRepository,
 		usecase.NewUserUsecase,
+		usecase.NewItemUsecase,
+		usecase.NewUsersItemsUseCase,
 		http_handler.NewUserHandler,
+		http_handler.NewItemHandler,
 		adapter.NewMasterHandler,
 	)
 	return &adapter.MasterHandler{}

@@ -49,6 +49,11 @@ func main() {
 			user.GET("/loginbonus", mh.User.LoginBonus())
 
 		}
+		item := api.Group("/items")
+		{
+			item.GET("/", mh.Item.GetAllItem())
+			item.POST("/buy", mh.Item.BuyItem())
+		}
 	}
 
 	go func() {
