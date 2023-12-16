@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +25,7 @@ func main() {
 
 	// Health Check
 	e.GET("/", func(c echo.Context) error {
+		fmt.Fscanf(os.Stderr, "Hello, World!\n")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
