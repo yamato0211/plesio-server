@@ -36,8 +36,12 @@ func main() {
 		}
 		user := api.Group("/users")
 		{
-			user.GET("/:id", mh.User.GetUser())
+			user.POST("/", mh.User.CreateUser())
+			user.GET("/get/:id", mh.User.GetUser())
+			user.GET("/loginbonus", mh.User.LoginBonus())
+
 		}
+
 		redis := api.Group("/redis")
 		{
 			redis.GET("/:key", mh.Redis.Ping())
