@@ -18,7 +18,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Use(middleware.Recover())
-	// e.Use(middleware.Logger())
+	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
 	// DI
