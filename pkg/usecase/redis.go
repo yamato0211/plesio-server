@@ -20,7 +20,7 @@ func NewRedisUsecase(rr repository.RedisRepository) IRedisUsecase {
 }
 
 func (ru *RedisUsecase) Ping(ctx echo.Context) error {
-	err := ru.repo.Ping(ctx)
+	err := ru.repo.Ping(ctx.Request().Context())
 	if err != nil {
 		return err
 	}

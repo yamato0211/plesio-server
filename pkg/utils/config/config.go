@@ -50,7 +50,7 @@ func NewDBConfig() *DBConfig {
 
 func NewRedisConfig() *RedisConfig {
 	cfg := &RedisConfig{
-		RedisEndpoint: LookUpEnv("REDIS_ENDPOINT", "localhost:6379"),
+		RedisEndpoint: LookUpEnv("REDIS_ENDPOINT", "redis:6379"),
 	}
 	return cfg
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	ws_handler "github.com/yamato0211/plesio-server/pkg/adapter/ws/handler"
 	"github.com/yamato0211/plesio-server/pkg/injection"
 )
 
@@ -22,8 +24,14 @@ func main() {
 	// DI
 	mh := injection.InitializeMasterHandler()
 
+	// websockets
+	hub := injection.InitializeWebSocketHub()
+	go hub.SubscribeMessages()
+	go hub.RunLoop()
+
 	// Health Check
 	e.GET("/", func(c echo.Context) error {
+		log.Println("health check")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
@@ -32,7 +40,7 @@ func main() {
 	{
 		ws := api.Group("/ws")
 		{
-			ws.GET("/", mh.Ws.Handle())
+			ws.GET("/", ws_handler.NewWebSocketHandler(hub).Handle())
 		}
 		user := api.Group("/users")
 		{
@@ -40,11 +48,6 @@ func main() {
 			user.GET("/get/:id", mh.User.GetUser())
 			user.GET("/loginbonus", mh.User.LoginBonus())
 
-		}
-
-		redis := api.Group("/redis")
-		{
-			redis.GET("/:key", mh.Redis.Ping())
 		}
 	}
 

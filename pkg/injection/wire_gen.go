@@ -8,8 +8,7 @@ package injection
 
 import (
 	"github.com/yamato0211/plesio-server/pkg/adapter"
-	handler2 "github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
-	"github.com/yamato0211/plesio-server/pkg/adapter/ws/handler"
+	"github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
 	"github.com/yamato0211/plesio-server/pkg/infra/mysql"
 	"github.com/yamato0211/plesio-server/pkg/infra/redis"
 	"github.com/yamato0211/plesio-server/pkg/usecase"
@@ -20,17 +19,18 @@ import (
 // Injectors from wire.go:
 
 func InitializeMasterHandler() *adapter.MasterHandler {
-	hub := ws.NewHub()
-	webSocketHandler := handler.NewWebSocketHandler(hub)
 	dbConfig := config.NewDBConfig()
 	db := mysql.NewMySQLConnector(dbConfig)
 	userRepository := mysql.NewUserRepository(db)
 	iUserUsecase := usecase.NewUserUsecase(userRepository)
-	userHandler := handler2.NewUserHandler(iUserUsecase)
-	redisConfig := config.NewRedisConfig()
-	redisRepository := redis.NewRedisConnector(redisConfig)
-	iRedisUsecase := usecase.NewRedisUsecase(redisRepository)
-	redisHandler := handler2.NewRedisHandler(iRedisUsecase)
-	masterHandler := adapter.NewMasterHandler(webSocketHandler, userHandler, redisHandler)
+	userHandler := handler.NewUserHandler(iUserUsecase)
+	masterHandler := adapter.NewMasterHandler(userHandler)
 	return masterHandler
+}
+
+func InitializeWebSocketHub() *ws.Hub {
+	redisConfig := config.NewRedisConfig()
+	redisRepository := redis.NewRedisRepository(redisConfig)
+	hub := ws.NewHub(redisRepository)
+	return hub
 }
