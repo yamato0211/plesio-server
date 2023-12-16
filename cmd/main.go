@@ -38,6 +38,10 @@ func main() {
 		{
 			user.GET("/:id", mh.User.GetUser())
 		}
+		redis := api.Group("/redis")
+		{
+			redis.GET("/:key", mh.Redis.Ping())
+		}
 	}
 
 	go func() {

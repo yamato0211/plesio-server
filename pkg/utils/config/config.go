@@ -12,6 +12,10 @@ type DBConfig struct {
 	DBPort string
 }
 
+type RedisConfig struct {
+	RedisEndpoint string
+}
+
 func NewDBConfig() *DBConfig {
 	cfg := &DBConfig{
 		DBHost: LookUpEnv("MYSQL_HOST", "127.0.0.1"),
@@ -19,6 +23,13 @@ func NewDBConfig() *DBConfig {
 		DBUser: LookUpEnv("MYSQL_USER", "admin"),
 		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
+	}
+	return cfg
+}
+
+func NewRedisConfig() *RedisConfig {
+	cfg := &RedisConfig{
+		RedisEndpoint: LookUpEnv("REDIS_ENDPOINT", "localhost:6379"),
 	}
 	return cfg
 }

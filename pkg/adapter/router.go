@@ -6,13 +6,15 @@ import (
 )
 
 type MasterHandler struct {
-	Ws   *ws.WebSocketHandler
-	User *http.UserHandler
+	Ws    *ws.WebSocketHandler
+	User  *http.UserHandler
+	Redis *http.RedisHandler
 }
 
-func NewMasterHandler(ws *ws.WebSocketHandler, user *http.UserHandler) *MasterHandler {
+func NewMasterHandler(ws *ws.WebSocketHandler, user *http.UserHandler, redis *http.RedisHandler) *MasterHandler {
 	return &MasterHandler{
-		Ws:   ws,
-		User: user,
+		Ws:    ws,
+		User:  user,
+		Redis: redis,
 	}
 }

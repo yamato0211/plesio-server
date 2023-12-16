@@ -11,6 +11,7 @@ import (
 	handler2 "github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
 	"github.com/yamato0211/plesio-server/pkg/adapter/ws/handler"
 	"github.com/yamato0211/plesio-server/pkg/infra/mysql"
+	"github.com/yamato0211/plesio-server/pkg/infra/redis"
 	"github.com/yamato0211/plesio-server/pkg/usecase"
 	"github.com/yamato0211/plesio-server/pkg/utils/config"
 	"github.com/yamato0211/plesio-server/pkg/web/ws"
@@ -26,6 +27,10 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 	userRepository := mysql.NewUserRepository(db)
 	iUserUsecase := usecase.NewUserUsecase(userRepository)
 	userHandler := handler2.NewUserHandler(iUserUsecase)
-	masterHandler := adapter.NewMasterHandler(webSocketHandler, userHandler)
+	redisConfig := config.NewRedisConfig()
+	redisRepository := redis.NewRedisConnector(redisConfig)
+	iRedisUsecase := usecase.NewRedisUsecase(redisRepository)
+	redisHandler := handler2.NewRedisHandler(iRedisUsecase)
+	masterHandler := adapter.NewMasterHandler(webSocketHandler, userHandler, redisHandler)
 	return masterHandler
 }
