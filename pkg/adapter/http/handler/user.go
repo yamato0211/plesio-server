@@ -52,7 +52,7 @@ func (uh *UserHandler) LoginBonus() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
-		user, err := uh.usecase.LoginBonus(c, req.ID)
+		user, err := uh.usecase.LoginBonus(c, req.ID, req.GitID)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
