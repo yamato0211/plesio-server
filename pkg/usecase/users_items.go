@@ -17,7 +17,7 @@ func NewUsersItemsUseCase(repo repository.UsersItemsRepository) IUsersItemsUseCa
 }
 
 func (u *UsersItemsUseCase) BuyItem(userID string, itemID string, count int) error {
-	err := u.repo.Insert(userID, itemID, count)
+	err := u.repo.BuyItem(userID, itemID, count)
 	if err != nil {
 		return err
 	}
