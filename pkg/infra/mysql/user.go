@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
@@ -71,7 +72,7 @@ func (ur *userRepository) Insert(ctx echo.Context, name string, email string, gi
 }
 
 func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string) (*entity.User, error) {
-	githubPAT := "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" // GitHub Personal Access Token
+	githubPAT := os.Getenv("GITHUB_PERSONAL_ACCES_TOKEN") // GitHub Personal Access Token
 	if githubPAT == "" {
 		fmt.Println("GITHUB_PAT environment variable is not set.")
 		log.Fatal("githubPAT is not set.")
@@ -165,6 +166,7 @@ func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string)
 				contributionDays = lastWeek.ContributionDays
 				lastDay := contributionDays[len(contributionDays)-1]
 				cnt, _ := strconv.Atoi(strconv.Itoa(lastDay.ContributionCount))
+				cnt = cnt * 5
 				_, err = ur.db.Exec(sql, cnt, id)
 				if err != nil {
 					log.Fatal("update error")
@@ -175,6 +177,7 @@ func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string)
 			}
 			lastDay := contributionDays[len(contributionDays)-1]
 			cnt := lastDay.ContributionCount
+			cnt = cnt * 5
 			_, err = ur.db.Exec(sql, cnt, id)
 			// if len(contributionDays) == 1 {
 			// 	lastWeek := weeks[len(weeks)-2]
