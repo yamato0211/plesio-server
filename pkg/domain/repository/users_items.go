@@ -1,5 +1,5 @@
 package repository
 
 type UsersItemsRepository interface {
-	Insert(userID string, itemID string, count int) error
+	BuyItem(userID string, itemID string, count int) error
 }
