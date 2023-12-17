@@ -22,8 +22,7 @@ func NewItemHandler(iu usecase.IItemUsecase, uiu usecase.IUsersItemsUseCase) *It
 
 func (ih *ItemHandler) GetAllItem() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
 		items, err := ih.itemUsecase.GetAllItem()
@@ -51,10 +50,10 @@ func (ih *ItemHandler) GetAllItem() echo.HandlerFunc {
 
 func (ih *ItemHandler) GetAllMyItem() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
+		userID := c.Get("user_id").(string)
 		items, err := ih.itemUsecase.GetAllMyItem(userID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
@@ -81,10 +80,10 @@ func (ih *ItemHandler) GetAllMyItem() echo.HandlerFunc {
 
 func (ih *ItemHandler) BuyItem() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
+		userID := c.Get("user_id").(string)
 		req := &schemas.BuyItemRequest{}
 		if err := c.Bind(req); err != nil {
 			return c.JSON(http.StatusBadRequest, err)
