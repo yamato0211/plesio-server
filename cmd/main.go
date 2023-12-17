@@ -49,7 +49,7 @@ func main() {
 		{
 			user.GET("/get/:id", mh.User.GetUser())
 			user.GET("/login", mh.User.LoginUser())
-
+			user.GET("/coin", mh.User.GetMyCoin(), authMiddleware)
 		}
 		item := api.Group("/items")
 		{
