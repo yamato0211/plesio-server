@@ -40,14 +40,17 @@ func NewFirebaseMiddleware(firebaseApp *firebase.App, db *sqlx.DB) echo.Middlewa
 				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Firebase ID token")
 			}
 
-			log.Println(token)
+			log.Println(token.Subject)
 
 			type UserInfo struct {
 				UserID string `db:"id"`
 				// 必要に応じて他のフィールドも追加
 			}
 			var user UserInfo
-			githubID := token.UID
+			githubID := token.Subject
+			if db.Ping() != nil {
+				echo.NewHTTPError(http.StatusInternalServerError, "Error connecting to database")
+			}
 			err = db.Get(&user, "SELECT id FROM users WHERE git_id = ?", githubID)
 			if err != nil {
 				if err == sql.ErrNoRows {
