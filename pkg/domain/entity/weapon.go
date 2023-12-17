@@ -11,4 +11,4 @@ type Weapon struct {
 	Atk         int       `db:"atk"`
 	CreatedAt   time.Time `db:"created_at"`
 	UpdatedAt   time.Time `db:"updated_at"`
-
+}
