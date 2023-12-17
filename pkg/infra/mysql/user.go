@@ -56,19 +56,275 @@ func (ur *userRepository) Select(ctx echo.Context, id string) (*entity.User, err
 	return &user, nil
 }
 
-func (ur *userRepository) Insert(ctx echo.Context, name string, email string, git_id string) error {
-	sql := `INSERT INTO users (id, name, email, git_id) VALUES (:id, :name, :email, :git_id);`
+func (ur *userRepository) Login(ctx echo.Context, name string, email string, git_id string) (*entity.User, error) {
+	sql := `SELECT EXISTS(SELECT * FROM users WHERE git_id = ?)`
+	var exits bool
+	err := ur.db.Get(&exits, sql, git_id)
+	if err != nil {
+		log.Fatal("select error1"+", error : "+err.Error(), exits)
+		return nil, err
+	}
+	// Your code here
+
+	if exits {
+		githubPAT := os.Getenv("GITHUB_PERSONAL_ACCES_TOKEN") // GitHub Personal Access Token
+		if githubPAT == "" {
+			fmt.Println("GITHUB_PAT environment variable is not set.")
+			log.Fatal("githubPAT is not set.")
+			return nil, nil
+		}
+
+		sql := `SELECT * FROM users WHERE git_id = ?`
+		user := entity.User{}
+		err := ur.db.Get(&user, sql, git_id)
+
+		if err != nil {
+			log.Fatal(git_id)
+			log.Fatal("select error2")
+			return nil, err
+		}
+		if user.IsLogined == false {
+			sql := `UPDATE users SET is_logined = true WHERE git_id = ?`
+			_, err := ur.db.Exec(sql, git_id)
+			if err != nil {
+				log.Fatal("update error")
+				return nil, err
+			} else {
+				requestBody, err := json.Marshal(map[string]interface{}{
+					"query": `
+				query($userName:String!) {
+					user(login: $userName) {
+						contributionsCollection {
+							contributionCalendar {
+								totalContributions
+								weeks {
+									contributionDays{
+										contributionCount
+										date
+									}
+								}
+							}
+						}
+					}
+				}`,
+					"variables": map[string]string{
+						"userName": git_id,
+					},
+				})
+				if err != nil {
+					log.Fatal("request error")
+					fmt.Println("Error marshalling request body:", err)
+
+					return nil, err
+				}
+				//fmt.Println(string(requestBody))
+				// HTTP リクエストの作成
+				req, err := http.NewRequest("POST", "https://api.github.com/graphql", bytes.NewBuffer(requestBody))
+				if err != nil {
+					log.Fatal("request error2")
+					fmt.Println("Error creating request:", err)
+					return nil, err
+				}
+				req.Header.Set("Authorization", "Bearer "+githubPAT)
+				req.Header.Set("Content-Type", "application/json")
+
+				// HTTP クライアントでリクエストを送信
+				client := &http.Client{}
+				resp, err := client.Do(req)
+				if err != nil {
+					log.Fatal("request error3")
+					fmt.Println("Error sending request:", err)
+					return nil, err
+				}
+				defer resp.Body.Close()
+
+				// レスポンスを読み取る
+				respBody, err := io.ReadAll(resp.Body)
+				if err != nil {
+					log.Fatal("read error4")
+					fmt.Println("Error reading response:", err)
+					return nil, err
+				}
+
+				var response GraphQLResponse
+				if err = json.Unmarshal(respBody, &response); err != nil {
+					log.Fatal(err)
+					log.Fatal("json error5")
+				}
+
+				sql := `UPDATE users SET coin = coin + ? WHERE git_id = ?`
+				weeks := response.Data.User.ContributionsCollection.ContributionCalendar.Weeks
+				lastWeek := weeks[len(weeks)-1]
+				contributionDays := lastWeek.ContributionDays
+				if len(contributionDays) == 1 {
+					lastWeek = weeks[len(weeks)-2]
+					contributionDays = lastWeek.ContributionDays
+					lastDay := contributionDays[len(contributionDays)-1]
+					cnt, _ := strconv.Atoi(strconv.Itoa(lastDay.ContributionCount))
+					cnt = cnt * 5
+					_, err = ur.db.Exec(sql, cnt, git_id)
+					if err != nil {
+						log.Fatal("update error")
+						return nil, err
+					}
+					return &user, nil
+				}
+				lastDay := contributionDays[len(contributionDays)-1]
+				cnt := lastDay.ContributionCount
+				cnt = cnt * 5
+				_, err = ur.db.Exec(sql, cnt, git_id)
+				// if len(contributionDays) == 1 {
+				// 	lastWeek := weeks[len(weeks)-2]
+				// 	contributionDays := lastWeek.ContributionDays
+				// 	lastDay := contributionDays[len(contributionDays)-1]
+				// 	cnt := lastDay.ContributionCount
+				// 	_, err = ur.db.Exec(sql, cnt, id)
+				// } else {
+
+				// }
+
+				if err != nil {
+					log.Fatal("update error")
+					return nil, err
+				}
+				//fmt.Println(response.Data.User.ContributionsCollection.ContributionCalendar.Weeks.contributionDays.contributionCount)
+				log.Fatal("update ok")
+				return &user, nil
+			}
+		} else {
+			log.Fatal("is_logined is true")
+			return nil, err
+		}
+	}
+	sql = `INSERT INTO users (id, name, email, git_id) VALUES (:id, :name, :email, :git_id);`
 	in := entity.User{
 		ID:    uuid.NewUUID(),
 		Name:  name,
 		Email: email,
 		GitID: git_id,
 	}
-	_, err := ur.db.NamedExec(sql, in)
+	_, err = ur.db.NamedExec(sql, in)
 	if err != nil {
-		return err
+		log.Fatal("insert error2")
+		return nil, err
 	}
-	return nil
+	githubPAT := os.Getenv("GITHUB_PERSONAL_ACCES_TOKEN") // GitHub Personal Access Token
+	if githubPAT == "" {
+		fmt.Println("GITHUB_PAT environment variable is not set.")
+		log.Fatal("githubPAT is not set.")
+		return nil, nil
+	}
+
+	sql = `SELECT * FROM users WHERE git_id = ?`
+	user := entity.User{}
+	err = ur.db.Get(&user, sql, git_id)
+
+	if err != nil {
+		log.Fatal(git_id)
+		log.Fatal("select error3")
+		return nil, err
+	}
+
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"query": `
+				query($userName:String!) {
+					user(login: $userName) {
+						contributionsCollection {
+							contributionCalendar {
+								totalContributions
+								weeks {
+									contributionDays{
+										contributionCount
+										date
+									}
+								}
+							}
+						}
+					}
+				}`,
+		"variables": map[string]string{
+			"userName": "IsseTeruhi-uni",
+		},
+	})
+	if err != nil {
+		log.Fatal("request error")
+		fmt.Println("Error marshalling request body:", err)
+
+		return nil, err
+	}
+	//fmt.Println(string(requestBody))
+	// HTTP リクエストの作成
+	req, err := http.NewRequest("POST", "https://api.github.com/graphql", bytes.NewBuffer(requestBody))
+	if err != nil {
+		log.Fatal("request error2")
+		fmt.Println("Error creating request:", err)
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+githubPAT)
+	req.Header.Set("Content-Type", "application/json")
+
+	// HTTP クライアントでリクエストを送信
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal("request error3")
+		fmt.Println("Error sending request:", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// レスポンスを読み取る
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("read error4")
+		fmt.Println("Error reading response:", err)
+		return nil, err
+	}
+
+	var response GraphQLResponse
+	if err = json.Unmarshal(respBody, &response); err != nil {
+		log.Fatal(err)
+		log.Fatal("json error5")
+	}
+
+	sql = `UPDATE users SET coin = coin + ? WHERE git_id = ?`
+	weeks := response.Data.User.ContributionsCollection.ContributionCalendar.Weeks
+	lastWeek := weeks[len(weeks)-1]
+	contributionDays := lastWeek.ContributionDays
+	if len(contributionDays) == 1 {
+		lastWeek = weeks[len(weeks)-2]
+		contributionDays = lastWeek.ContributionDays
+		lastDay := contributionDays[len(contributionDays)-1]
+		cnt, _ := strconv.Atoi(strconv.Itoa(lastDay.ContributionCount))
+		cnt = cnt * 5
+		_, err = ur.db.Exec(sql, cnt, git_id)
+		if err != nil {
+			log.Fatal("update error")
+			return nil, err
+		}
+		return &user, nil
+	}
+	lastDay := contributionDays[len(contributionDays)-1]
+	cnt := lastDay.ContributionCount
+	cnt = cnt * 5
+	_, err = ur.db.Exec(sql, cnt, git_id)
+	// if len(contributionDays) == 1 {
+	// 	lastWeek := weeks[len(weeks)-2]
+	// 	contributionDays := lastWeek.ContributionDays
+	// 	lastDay := contributionDays[len(contributionDays)-1]
+	// 	cnt := lastDay.ContributionCount
+	// 	_, err = ur.db.Exec(sql, cnt, id)
+	// } else {
+
+	// }
+
+	if err != nil {
+		log.Fatal("update error")
+		return nil, err
+	}
+	//fmt.Println(response.Data.User.ContributionsCollection.ContributionCalendar.Weeks.contributionDays.contributionCount)
+	log.Fatal("update ok")
+	return &user, nil
 }
 
 func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string) (*entity.User, error) {
@@ -85,7 +341,7 @@ func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string)
 
 	if err != nil {
 		log.Fatal(id)
-		log.Fatal("select error")
+		log.Fatal("select error4")
 		return nil, err
 	}
 	if user.IsLogined == false {
@@ -113,7 +369,7 @@ func (ur *userRepository) LoginBonus(ctx echo.Context, id string, git_id string)
 					}
 				}`,
 				"variables": map[string]string{
-					"userName": "IsseTeruhi-uni",
+					"userName": git_id,
 				},
 			})
 			if err != nil {
