@@ -47,11 +47,12 @@ func NewFirebaseMiddleware(firebaseApp *firebase.App, db *sqlx.DB) echo.Middlewa
 				// 必要に応じて他のフィールドも追加
 			}
 			var user UserInfo
-			githubID := token.Subject
 			if db.Ping() != nil {
 				echo.NewHTTPError(http.StatusInternalServerError, "Error connecting to database")
 			}
-			err = db.Get(&user, "SELECT id FROM users WHERE git_id = ?", githubID)
+			err = db.Get(&user, "SELECT id FROM users WHERE git_id = ?", token.Subject)
+			log.Println("===============-")
+			log.Println(user)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					echo.NewHTTPError(http.StatusForbidden, "User not found")
