@@ -47,7 +47,7 @@ func NewFirebaseMiddleware(firebaseApp *firebase.App, db *sqlx.DB) echo.Middlewa
 				// 必要に応じて他のフィールドも追加
 			}
 			var user UserInfo
-			if db.Ping() != nil {
+			if err := db.Ping(); err != nil {
 				echo.NewHTTPError(http.StatusInternalServerError, "Error connecting to database")
 			}
 			err = db.Get(&user, "SELECT id FROM users WHERE git_id = ?", token.Subject)
