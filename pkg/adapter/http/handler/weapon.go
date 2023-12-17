@@ -22,8 +22,7 @@ func NewWeaponHandler(weaponUsecase usecase.IWeaponUseCase, usersWeaponsUsecase 
 
 func (wh *WeaponHandler) GetWeapons() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
 		weapons, err := wh.weaponUsecase.GetWeapons()
@@ -36,10 +35,10 @@ func (wh *WeaponHandler) GetWeapons() echo.HandlerFunc {
 
 func (wh *WeaponHandler) GetAllMyWeapon() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
+		userID := c.Get("user_id").(string)
 		weapons, err := wh.weaponUsecase.GetWeaponByID(userID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
@@ -64,10 +63,10 @@ func (wh *WeaponHandler) GetAllMyWeapon() echo.HandlerFunc {
 
 func (wh *WeaponHandler) DrawGacha() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get("user_id").(string)
-		if userID == "" {
+		if c.Get("user_id") == nil {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
+		userID := c.Get("user_id").(string)
 		weapon, err := wh.usersWeaponsUsecase.DrawGacha(userID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
