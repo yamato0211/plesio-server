@@ -33,6 +33,8 @@ func (h *WebSocketHandler) Handle() echo.HandlerFunc {
 			c.Logger().Errorf("failed to upgrade: %v", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to upgrade")
 		}
+		conn.SetReadDeadline(time.Now().Add(10 * time.Minute))
+		conn.SetWriteDeadline(time.Now().Add(10 * time.Minute))
 		client := ws.NewClient(conn)
 		go client.ReadLoop(h.hub.BroadcastCh, h.hub.UnRegisterCh)
 		go client.WriteLoop()
