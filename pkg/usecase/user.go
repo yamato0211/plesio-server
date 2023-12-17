@@ -8,8 +8,8 @@ import (
 
 type IUserUsecase interface {
 	GetUser(ctx echo.Context, id string) (*entity.User, error)
-	CreateUser(ctx echo.Context, name string, email string, git_id string) error
-	LoginBonus(ctx echo.Context, id string) (*entity.User, error)
+	LoginUser(ctx echo.Context, name string, email string, git_id string) (*entity.User, error)
+	// LoginBonus(ctx echo.Context, id string, git_id string) (*entity.User, error)
 }
 
 type UserUsecase struct {
@@ -30,18 +30,18 @@ func (uu *UserUsecase) GetUser(ctx echo.Context, id string) (*entity.User, error
 	return user, nil
 }
 
-func (uu *UserUsecase) CreateUser(ctx echo.Context, name string, email string, git_id string) error {
-	err := uu.repo.Insert(ctx, name, email, git_id)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (uu *UserUsecase) LoginBonus(ctx echo.Context, id string) (*entity.User, error) {
-	user, err := uu.repo.LoginBonus(ctx, id)
+func (uu *UserUsecase) LoginUser(ctx echo.Context, name string, email string, git_id string) (*entity.User, error) {
+	user, err := uu.repo.Login(ctx, name, email, git_id)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
+
+// func (uu *UserUsecase) LoginBonus(ctx echo.Context, id string, git_id string) (*entity.User, error) {
+// 	user, err := uu.repo.LoginBonus(ctx, id, git_id)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return user, nil
+// }

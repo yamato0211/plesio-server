@@ -7,6 +7,7 @@ import (
 
 type IWeaponUseCase interface {
 	GetWeapons() ([]*entity.Weapon, error)
+	GetWeaponByID(userID string) ([]*entity.UserWeapons, error)
 }
 
 type WeaponUseCase struct {
@@ -27,3 +28,13 @@ func (u *WeaponUseCase) GetWeapons() ([]*entity.Weapon, error) {
 
 	return weapons, nil
 }
+
+func (u *WeaponUseCase) GetWeaponByID(userID string) ([]*entity.UserWeapons, error) {
+	weapon, err := u.repo.SelectAllByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return weapon, nil
+}
+

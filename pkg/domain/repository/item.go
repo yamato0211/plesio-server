@@ -6,4 +6,5 @@ import (
 
 type ItemRepository interface {
 	SelectAll() ([]*entity.Item, error)
+	SelectAllByID(id string) ([]*entity.UserItems, error)
 }

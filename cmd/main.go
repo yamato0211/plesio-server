@@ -47,19 +47,20 @@ func main() {
 		}
 		user := api.Group("/users")
 		{
-			user.POST("/", mh.User.CreateUser())
 			user.GET("/get/:id", mh.User.GetUser())
-			user.GET("/loginbonus", mh.User.LoginBonus())
+			user.GET("/login", mh.User.LoginUser())
 
 		}
 		item := api.Group("/items")
 		{
 			item.GET("/", mh.Item.GetAllItem(), authMiddleware)
+			item.GET("/my", mh.Item.GetAllMyItem(), authMiddleware)
 			item.POST("/buy", mh.Item.BuyItem(), authMiddleware)
 		}
 		weapon := api.Group("/weapons")
 		{
 			weapon.GET("/", mh.Weapon.GetWeapons(), authMiddleware)
+			weapon.GET("/my", mh.Weapon.GetAllMyWeapon(), authMiddleware)
 			weapon.POST("/draw", mh.Weapon.DrawGacha(), authMiddleware)
 		}
 	}

@@ -43,16 +43,18 @@ func NewDBConfig() *DBConfig {
 	godotenv.Load()
 
 	cfg := &DBConfig{
-		DBHost: LookUpEnv("MYSQL_HOST", "db"),
-		DBName: LookUpEnv("MYSQL_DATABASE", "db"),
-		DBUser: LookUpEnv("MYSQL_USER", "user"),
-		DBPass: LookUpEnv("MYSQL_PASSWORD", "password"),
+		DBHost: LookUpEnv("MYSQL_HOST", "127.0.0.1"),
+		DBName: LookUpEnv("MYSQL_DATABASE", "db"), //main
+		DBUser: LookUpEnv("MYSQL_USER", "admin"),
+		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
+
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	}
 	return cfg
 }
 
 func NewRedisConfig() *RedisConfig {
+	godotenv.Load()
 	cfg := &RedisConfig{
 		RedisEndpoint: LookUpEnv("REDIS_ENDPOINT", "redis:6379"),
 	}

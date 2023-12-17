@@ -9,3 +9,8 @@ type UsersItems struct {
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
+
+type UserItems struct {
+	Item
+	Count int `db:"count"`
+}

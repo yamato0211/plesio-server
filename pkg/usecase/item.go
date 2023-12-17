@@ -7,6 +7,7 @@ import (
 
 type IItemUsecase interface {
 	GetAllItem() ([]*entity.Item, error)
+	GetAllMyItem(userID string) ([]*entity.UserItems, error)
 }
 
 type ItemUsecase struct {
@@ -21,6 +22,14 @@ func NewItemUsecase(ir repository.ItemRepository) IItemUsecase {
 
 func (iu *ItemUsecase) GetAllItem() ([]*entity.Item, error) {
 	items, err := iu.repo.SelectAll()
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+func (iu *ItemUsecase) GetAllMyItem(userID string) ([]*entity.UserItems, error) {
+	items, err := iu.repo.SelectAllByID(userID)
 	if err != nil {
 		return nil, err
 	}
