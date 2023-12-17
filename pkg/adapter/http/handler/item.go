@@ -34,14 +34,45 @@ func (ih *ItemHandler) GetAllItem() echo.HandlerFunc {
 		res := make([]*schemas.Item, len(items))
 		for i, item := range items {
 			res[i] = &schemas.Item{
-				ID:        item.ID,
-				Name:      item.Name,
-				Type:      item.Type,
-				Amount:    item.Amount,
-				Reality:   item.Reality,
-				Price:     item.Price,
-				CreatedAt: item.CreatedAt,
-				UpdatedAt: item.UpdatedAt,
+				ID:          item.ID,
+				Name:        item.Name,
+				Type:        item.Type,
+				Amount:      item.Amount,
+				Description: item.Description,
+				Reality:     item.Reality,
+				Price:       item.Price,
+				CreatedAt:   item.CreatedAt,
+				UpdatedAt:   item.UpdatedAt,
+			}
+		}
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
+func (ih *ItemHandler) GetAllMyItem() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := c.Get("user_id").(string)
+		if userID == "" {
+			return c.JSON(http.StatusUnauthorized, "you are not logged in")
+		}
+		items, err := ih.itemUsecase.GetAllMyItem(userID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		res := make([]*schemas.MyItemsResponce, len(items))
+		for i, item := range items {
+			res[i] = &schemas.MyItemsResponce{
+				ID:          item.ID,
+				Name:        item.Name,
+				Type:        item.Type,
+				Amount:      item.Amount,
+				Description: item.Description,
+				Reality:     item.Reality,
+				Price:       item.Price,
+				Count:       item.Count,
+				CreatedAt:   item.CreatedAt,
+				UpdatedAt:   item.UpdatedAt,
 			}
 		}
 		return c.JSON(http.StatusOK, res)

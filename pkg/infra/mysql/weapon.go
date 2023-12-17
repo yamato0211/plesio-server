@@ -18,7 +18,20 @@ func NewWeaponRepository(db *sqlx.DB) repository.WeaponRepository {
 
 func (wr *weaponRepository) SelectAll() ([]*entity.Weapon, error) {
 	weapons := []*entity.Weapon{}
-	err := wr.db.Select(&weapons, "SELECT * FROM weapons ORDER BY reality DESC and atk DESC")
+	err := wr.db.Select(&weapons, "SELECT * FROM weapons ORDER BY reality ASC, atk ASC")
+	if err != nil {
+		return nil, err
+	}
+	return weapons, nil
+}
+
+func (wr *weaponRepository) SelectAllByID(userID string) ([]*entity.UserWeapons, error) {
+	weapons := []*entity.UserWeapons{}
+	query := `SELECT w.*, uw.count
+		FROM users_weapons uw
+		INNER JOIN weapons w ON uw.weapon_id = w.id
+		WHERE uw.user_id = ?`
+	err := wr.db.Select(&weapons, query, userID)
 	if err != nil {
 		return nil, err
 	}

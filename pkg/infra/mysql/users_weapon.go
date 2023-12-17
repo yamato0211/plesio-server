@@ -40,7 +40,7 @@ func (ur *usersWeaponsRepository) DrawGacha(userID string) (*entity.Weapon, erro
 	}()
 
 	weapons := []*entity.Weapon{}
-	err = ur.db.Select(&weapons, "SELECT * FROM weapons ORDER BY reality DESC and atk DESC")
+	err = tx.Select(&weapons, "SELECT * FROM weapons ORDER BY reality ASC, atk ASC")
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (ur *usersWeaponsRepository) DrawGacha(userID string) (*entity.Weapon, erro
 		VALUES (?, ?, 1) 
 		ON DUPLICATE KEY UPDATE count = count + 1;`
 
-		_, err := ur.db.Exec(query, userID, selectedWeapon.ID)
+		_, err := tx.Exec(query, userID, selectedWeapon.ID)
 		if err != nil {
 			return nil, err
 		}

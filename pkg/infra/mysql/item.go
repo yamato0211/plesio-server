@@ -24,3 +24,16 @@ func (ir *itemRepository) SelectAll() ([]*entity.Item, error) {
 	}
 	return items, nil
 }
+
+func (ir *itemRepository) SelectAllByID(userID string) ([]*entity.UserItems, error) {
+	items := []*entity.UserItems{}
+	query := `SELECT i.*, ui.count
+		FROM users_items ui
+		INNER JOIN items i ON ui.item_id = i.id
+		WHERE ui.user_id = ?`
+	err := ir.db.Select(&items, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
