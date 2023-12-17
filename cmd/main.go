@@ -53,13 +53,13 @@ func main() {
 		}
 		item := api.Group("/items")
 		{
-			item.GET("/", mh.Item.GetAllItem(), authMiddleware)
+			item.GET("/", mh.Item.GetAllItem())
 			item.GET("/my", mh.Item.GetAllMyItem(), authMiddleware)
 			item.POST("/buy", mh.Item.BuyItem(), authMiddleware)
 		}
 		weapon := api.Group("/weapons")
 		{
-			weapon.GET("/", mh.Weapon.GetWeapons(), authMiddleware)
+			weapon.GET("/", mh.Weapon.GetWeapons())
 			weapon.GET("/my", mh.Weapon.GetAllMyWeapon(), authMiddleware)
 			weapon.POST("/draw", mh.Weapon.DrawGacha(), authMiddleware)
 		}

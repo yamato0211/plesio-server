@@ -22,9 +22,9 @@ func NewItemHandler(iu usecase.IItemUsecase, uiu usecase.IUsersItemsUseCase) *It
 
 func (ih *ItemHandler) GetAllItem() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if c.Get("user_id") == nil {
-			return c.JSON(http.StatusUnauthorized, "you are not logged in")
-		}
+		// if c.Get("user_id") == nil {
+		// 	return c.JSON(http.StatusUnauthorized, "you are not logged in")
+		// }
 		items, err := ih.itemUsecase.GetAllItem()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)

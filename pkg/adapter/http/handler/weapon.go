@@ -22,9 +22,9 @@ func NewWeaponHandler(weaponUsecase usecase.IWeaponUseCase, usersWeaponsUsecase 
 
 func (wh *WeaponHandler) GetWeapons() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if c.Get("user_id") == nil {
-			return c.JSON(http.StatusUnauthorized, "you are not logged in")
-		}
+		// if c.Get("user_id") == nil {
+		// 	return c.JSON(http.StatusUnauthorized, "you are not logged in")
+		// }
 		weapons, err := wh.weaponUsecase.GetWeapons()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
