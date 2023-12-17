@@ -7,6 +7,7 @@
 package injection
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/yamato0211/plesio-server/pkg/adapter"
 	"github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
 	"github.com/yamato0211/plesio-server/pkg/infra/mysql"
@@ -29,7 +30,12 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 	usersItemsRepository := mysql.NewUsersItemsRepository(db)
 	iUsersItemsUseCase := usecase.NewUsersItemsUseCase(usersItemsRepository)
 	itemHandler := handler.NewItemHandler(iItemUsecase, iUsersItemsUseCase)
-	masterHandler := adapter.NewMasterHandler(userHandler, itemHandler)
+	weaponRepository := mysql.NewWeaponRepository(db)
+	iWeaponUseCase := usecase.NewWeaponUseCase(weaponRepository)
+	usersWeaponsRepository := mysql.NewUsersWeaponsRepository(db)
+	iUsersWeaponsUseCase := usecase.NewUsersWeaponsUseCase(usersWeaponsRepository)
+	weaponHandler := handler.NewWeaponHandler(iWeaponUseCase, iUsersWeaponsUseCase)
+	masterHandler := adapter.NewMasterHandler(userHandler, itemHandler, weaponHandler)
 	return masterHandler
 }
 
@@ -38,4 +44,10 @@ func InitializeWebSocketHub() *ws.Hub {
 	redisRepository := redis.NewRedisRepository(redisConfig)
 	hub := ws.NewHub(redisRepository)
 	return hub
+}
+
+func InitialDBConn() *sqlx.DB {
+	dbConfig := config.NewDBConfig()
+	db := mysql.NewMySQLConnector(dbConfig)
+	return db
 }

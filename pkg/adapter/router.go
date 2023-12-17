@@ -5,13 +5,15 @@ import (
 )
 
 type MasterHandler struct {
-	User *http.UserHandler
-	Item *http.ItemHandler
+	User   *http.UserHandler
+	Item   *http.ItemHandler
+	Weapon *http.WeaponHandler
 }
 
-func NewMasterHandler(user *http.UserHandler, item *http.ItemHandler) *MasterHandler {
+func NewMasterHandler(user *http.UserHandler, item *http.ItemHandler, weapon *http.WeaponHandler) *MasterHandler {
 	return &MasterHandler{
-		User: user,
-		Item: item,
+		User:   user,
+		Item:   item,
+		Weapon: weapon,
 	}
 }

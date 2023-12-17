@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	auth_middleware "github.com/yamato0211/plesio-server/pkg/adapter/http/middleware"
 	ws_handler "github.com/yamato0211/plesio-server/pkg/adapter/ws/handler"
 	"github.com/yamato0211/plesio-server/pkg/injection"
 )
@@ -18,8 +18,12 @@ import (
 func main() {
 	e := echo.New()
 	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
+	// e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
+
+	// auth middleware
+	conn := injection.InitialDBConn()
+	authMiddleware := auth_middleware.NewFirebaseMiddleware(auth_middleware.InitializeAppWithServiceAccount("./secret.json"), conn)
 
 	// DI
 	mh := injection.InitializeMasterHandler()
@@ -31,7 +35,6 @@ func main() {
 
 	// Health Check
 	e.GET("/", func(c echo.Context) error {
-		log.Println("health check")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
@@ -51,8 +54,13 @@ func main() {
 		}
 		item := api.Group("/items")
 		{
-			item.GET("/", mh.Item.GetAllItem())
-			item.POST("/buy", mh.Item.BuyItem())
+			item.GET("/", mh.Item.GetAllItem(), authMiddleware)
+			item.POST("/buy", mh.Item.BuyItem(), authMiddleware)
+		}
+		weapon := api.Group("/weapons")
+		{
+			weapon.GET("/", mh.Weapon.GetWeapons(), authMiddleware)
+			weapon.POST("/draw", mh.Weapon.DrawGacha(), authMiddleware)
 		}
 	}
 
