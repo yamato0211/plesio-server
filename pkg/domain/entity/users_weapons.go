@@ -13,4 +13,4 @@ type UsersWeapons struct {
 type UserWeapons struct {
 	Weapon
 	Count int `db:"count"`
-}
+

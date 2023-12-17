@@ -37,3 +37,4 @@ func (u *WeaponUseCase) GetWeaponByID(userID string) ([]*entity.UserWeapons, err
 
 	return weapon, nil
 }
+

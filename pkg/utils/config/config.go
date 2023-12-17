@@ -47,6 +47,7 @@ func NewDBConfig() *DBConfig {
 		DBName: LookUpEnv("MYSQL_DATABASE", "db"), //main
 		DBUser: LookUpEnv("MYSQL_USER", "admin"),
 		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
+
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	}
 	return cfg

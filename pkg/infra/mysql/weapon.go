@@ -32,6 +32,7 @@ func (wr *weaponRepository) SelectAllByID(userID string) ([]*entity.UserWeapons,
 		INNER JOIN weapons w ON uw.weapon_id = w.id
 		WHERE uw.user_id = ?`
 	err := wr.db.Select(&weapons, query, userID)
+
 	if err != nil {
 		return nil, err
 	}

@@ -28,8 +28,6 @@ func (wh *WeaponHandler) GetWeapons() echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, "you are not logged in")
 		}
 		weapons, err := wh.weaponUsecase.GetWeapons()
-		log.Println(weapons)
-		log.Println("err: ", err)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
@@ -75,6 +73,7 @@ func (wh *WeaponHandler) DrawGacha() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
+
 		res := &schemas.Weapon{
 			ID:          weapon.ID,
 			Name:        weapon.Name,
