@@ -2,6 +2,8 @@ package config
 
 import (
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type DBConfig struct {
@@ -38,11 +40,13 @@ func NewDBConfig() *DBConfig {
 	// 	DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	// }
 
+	godotenv.Load()
+
 	cfg := &DBConfig{
-		DBHost: LookUpEnv("MYSQL_HOST", "127.0.0.1"),
-		DBName: LookUpEnv("MYSQL_DATABASE", "main"),
-		DBUser: LookUpEnv("MYSQL_USER", "admin"),
-		DBPass: LookUpEnv("MYSQL_PASSWORD", "kumayama0211"),
+		DBHost: LookUpEnv("MYSQL_HOST", "db"),
+		DBName: LookUpEnv("MYSQL_DATABASE", "db"),
+		DBUser: LookUpEnv("MYSQL_USER", "user"),
+		DBPass: LookUpEnv("MYSQL_PASSWORD", "password"),
 		DBPort: LookUpEnv("MYSQL_PORT", "3306"),
 	}
 	return cfg

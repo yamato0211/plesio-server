@@ -5,6 +5,7 @@ package injection
 
 import (
 	"github.com/google/wire"
+	"github.com/jmoiron/sqlx"
 	"github.com/yamato0211/plesio-server/pkg/adapter"
 	http_handler "github.com/yamato0211/plesio-server/pkg/adapter/http/handler"
 	"github.com/yamato0211/plesio-server/pkg/infra/mysql"
@@ -21,11 +22,16 @@ func InitializeMasterHandler() *adapter.MasterHandler {
 		mysql.NewUserRepository,
 		mysql.NewItemRepository,
 		mysql.NewUsersItemsRepository,
+		mysql.NewWeaponRepository,
+		mysql.NewUsersWeaponsRepository,
 		usecase.NewUserUsecase,
 		usecase.NewItemUsecase,
 		usecase.NewUsersItemsUseCase,
+		usecase.NewWeaponUseCase,
+		usecase.NewUsersWeaponsUseCase,
 		http_handler.NewUserHandler,
 		http_handler.NewItemHandler,
+		http_handler.NewWeaponHandler,
 		adapter.NewMasterHandler,
 	)
 	return &adapter.MasterHandler{}
@@ -38,4 +44,12 @@ func InitializeWebSocketHub() *ws.Hub {
 		ws.NewHub,
 	)
 	return &ws.Hub{}
+}
+
+func InitialDBConn() *sqlx.DB {
+	wire.Build(
+		config.NewDBConfig,
+		mysql.NewMySQLConnector,
+	)
+	return &sqlx.DB{}
 }
