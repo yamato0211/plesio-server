@@ -45,6 +45,24 @@ func (uh *UserHandler) LoginUser() echo.HandlerFunc {
 	}
 }
 
+func (uh *UserHandler) GetMyCoin() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if c.Get("user_id") == nil {
+			return c.JSON(http.StatusUnauthorized, "you are not logged in")
+		}
+		userID := c.Get("user_id").(string)
+		user, err := uh.usecase.GetUser(c, userID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		res := &schemas.MyCoinResponse{
+			Coin: user.Coin,
+		}
+		return c.JSON(http.StatusOK, res)
+	}
+}
+
 // func (uh *UserHandler) LoginBonus() echo.HandlerFunc {
 // 	return func(c echo.Context) error {
 // 		var req schemas.LoginBonusRequest

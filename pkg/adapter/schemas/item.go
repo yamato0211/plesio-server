@@ -31,3 +31,7 @@ type MyItemsResponce struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+type MyCoinResponse struct {
+	Coin int `json:"coin"`
+}
