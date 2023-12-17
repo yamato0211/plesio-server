@@ -29,14 +29,14 @@ func (uh *UserHandler) GetUser() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, user)
 	}
 }
-func (uh *UserHandler) CreateUser() echo.HandlerFunc {
+func (uh *UserHandler) LoginUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var req schemas.CreateUserRequest
+		var req schemas.LoginRequest
 		err := c.Bind(&req)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
-		err = uh.usecase.CreateUser(c, req.Name, req.Email, req.GitID)
+		_, err = uh.usecase.LoginUser(c, req.Name, req.Email, req.GitID)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
@@ -45,18 +45,18 @@ func (uh *UserHandler) CreateUser() echo.HandlerFunc {
 	}
 }
 
-func (uh *UserHandler) LoginBonus() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var req schemas.LoginBonusRequest
-		err := c.Bind(&req)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-		user, err := uh.usecase.LoginBonus(c, req.ID)
+// func (uh *UserHandler) LoginBonus() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		var req schemas.LoginBonusRequest
+// 		err := c.Bind(&req)
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, err)
+// 		}
+// 		user, err := uh.usecase.LoginBonus(c, req.ID, req.GitID)
 
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-		return c.JSON(http.StatusOK, user)
-	}
-}
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, err)
+// 		}
+// 		return c.JSON(http.StatusOK, user)
+// 	}
+// }
